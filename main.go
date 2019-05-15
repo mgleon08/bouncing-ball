@@ -1,11 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
-
 	const (
-		width     = 20
+		width     = 12
 		height    = 12
 		cellEmpty = ' '
 		cellBall  = '⚾'
@@ -20,16 +21,23 @@ func main() {
 		board[columnIndex] = make([]bool, height)
 	}
 
-	board[2][3] = true
+	buf := make([]rune, width*height)
 
-	for y := range board[0] {
-		for x := range board {
-			cell = cellEmpty
-			if board[x][y] {
-				cell = cellBall
+	board[0][0] = true
+
+	for i := 0; i < 1000; i++ {
+		// reuses buffer
+		buf = buf[:0]
+		for y := range board[0] {
+			for x := range board {
+				cell = cellEmpty
+				if board[x][y] {
+					cell = cellBall
+				}
+				buf = append(buf, cell, ' ')
 			}
-			fmt.Print(string(cell), " ")
+			buf = append(buf, '\n')
 		}
-		fmt.Println()
+		fmt.Println(string(buf))
 	}
 }
