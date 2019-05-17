@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
+
+	"github.com/mattn/go-runewidth"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
 	const (
-		width     = 50
-		height    = 12
 		cellEmpty = ' '
 		cellBall  = '⚾'
-		bufLen    = (width*2 + 1) * height
 	)
 
 	var (
@@ -21,6 +22,23 @@ func main() {
 		maxFrames = 1200
 		speed     = time.Second / 20
 	)
+
+	// you can get the width and height using the screen package easily:
+	// width, height := screen.Size()
+	width, height, err := terminal.GetSize(int(os.Stdout.Fd()))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// get the rune width of the ball emoji
+	ballWidth := runewidth.RuneWidth(cellBall)
+
+	// adjust the width and height
+	width /= ballWidth
+	height-- // there is a 1 pixel border in my terminal
+
+	bufLen := (width*2 + 1) * height
 
 	// create board
 	board := make([][]bool, width)
