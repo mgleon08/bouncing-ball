@@ -2,34 +2,36 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"time"
 
+	"github.com/inancgumus/screen"
 	"github.com/mattn/go-runewidth"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
 	const (
 		cellEmpty = ' '
 		cellBall  = '⚾'
+		maxFrames = 1200
+		speed     = time.Second / 20
+		// initial velocities
+		ivx, ivy = 2, 12
 	)
 
 	var (
-		px, py    int
-		vx, vy    = 1, 1 // velocities
-		cell      rune   // rune == int32 == ''
-		maxFrames = 1200
-		speed     = time.Second / 20
+		px, py   int        // ball position
+		ppx, ppy int        // previous ball position
+		vx, vy   = ivx, ivx // velocities
+		cell     rune       // rune == int32 == ''
 	)
 
 	// you can get the width and height using the screen package easily:
-	// width, height := screen.Size()
-	width, height, err := terminal.GetSize(int(os.Stdout.Fd()))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	width, height := screen.Size()
+	// width, height, err := terminal.GetSize(int(os.Stdout.Fd()))
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 
 	// get the rune width of the ball emoji
 	ballWidth := runewidth.RuneWidth(cellBall)
@@ -60,15 +62,18 @@ func main() {
 		py += vy
 
 		// when the ball hits a border reverse its direction
-		if px <= 0 || px >= width-1 {
+		if px <= 0 || px >= width-ivx {
 			vx *= -1
 		}
-		if py <= 0 || py >= height-1 {
+		if py <= 0 || py >= height-ivx {
 			vy *= -1
 		}
 
 		// put the new ball
-		board[px][py] = true
+		board[px][py], board[ppx][ppy] = true, false
+
+		// save the previous positions
+		ppx, ppy = px, py
 
 		// reuses buffer
 		buf = buf[:0]
