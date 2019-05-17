@@ -19,10 +19,9 @@ func main() {
 	)
 
 	var (
-		px, py   int        // ball position
-		ppx, ppy int        // previous ball position
-		vx, vy   = ivx, ivx // velocities
-		cell     rune       // rune == int32 == ''
+		px, py int        // ball position
+		vx, vy = ivx, ivx // velocities
+		cell   rune       // rune == int32 == ''
 	)
 
 	// you can get the width and height using the screen package easily:
@@ -42,21 +41,12 @@ func main() {
 
 	bufLen := (width*2 + 1) * height
 
-	// create board
-	board := make([][]bool, width)
-	for columnIndex := range board {
-		board[columnIndex] = make([]bool, height)
-	}
-
 	buf := make([]rune, 0, bufLen)
 
 	// clear the screen
 	fmt.Print("\033[2J")
 
 	for i := 0; i < maxFrames; i++ {
-		// remove the previous ball
-		board[px][py] = false
-
 		// move x, y
 		px += vx
 		py += vy
@@ -69,22 +59,18 @@ func main() {
 			vy *= -1
 		}
 
-		// put the new ball
-		board[px][py], board[ppx][ppy] = true, false
-
-		// save the previous positions
-		ppx, ppy = px, py
-
 		// reuses buffer
 		buf = buf[:0]
 
 		// draw the board
-		for y := range board[0] {
-			for x := range board {
+		for y := 0; y < height; y++ {
+			for x := 0; x < width; x++ {
 				cell = cellEmpty
-				if board[x][y] {
+
+				if px == x && py == y {
 					cell = cellBall
 				}
+
 				buf = append(buf, cell, ' ')
 			}
 			buf = append(buf, '\n')
