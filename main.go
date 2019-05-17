@@ -11,6 +11,7 @@ func main() {
 		height    = 12
 		cellEmpty = ' '
 		cellBall  = '⚾'
+		bufLen    = (width*2 + 1) * height
 	)
 
 	var (
@@ -27,7 +28,7 @@ func main() {
 		board[columnIndex] = make([]bool, height)
 	}
 
-	buf := make([]rune, width*height)
+	buf := make([]rune, 0, bufLen)
 
 	// clear the screen
 	fmt.Print("\033[2J")
